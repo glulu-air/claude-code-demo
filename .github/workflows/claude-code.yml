@@ -1,0 +1,33 @@
+name: Claude Code
+
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
+  pull_request:
+    types: [opened, edited]
+  pull_request_review_comment:
+    types: [created, edited]
+
+jobs:
+  claude:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.body, '@claude') || contains(github.event.comment.body, '@claude') || contains(github.event.pull_request.body, '@claude') || contains(github.event.review.body, '@claude')
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Claude Code
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic-api-key: ${{ secrets.ANTHROPIC_SECRET }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Claude Code
+        run: |
+          echo "Claude Code is processing the request..."
