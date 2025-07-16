@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スペースインベーダー</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .game-container {
+            text-align: center;
+        }
+        
+        canvas {
+            border: 2px solid #0f0;
+            background: #000;
+        }
+        
+        .score {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .instructions {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .game-over {
+            color: #f00;
+            font-size: 32px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="score">スコア: <span id="score">0</span></div>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div class="instructions">
+            矢印キー: 移動 | スペースキー: 発射 | R: リスタート
+        </div>
+        <div id="gameOver" class="game-over" style="display: none;">
+            ゲームオーバー！<br>Rキーでリスタート
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>

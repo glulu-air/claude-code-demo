@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  space-invaders:
+    build: .
+    ports:
+      - "8080:80"
+    container_name: space-invaders-game
+    restart: unless-stopped
