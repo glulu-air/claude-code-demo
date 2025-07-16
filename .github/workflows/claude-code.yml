@@ -1,4 +1,4 @@
-name: Claude Code
+name: Claude Code Assistant
 
 on:
   issues:
@@ -11,15 +11,15 @@ on:
     types: [created, edited]
 
 permissions:
-  contents: read
-  pull-requests: read
-  issues: read
+  contents: write
+  pull-requests: write
+  issues: write
   id-token: write
 
 jobs:
   claude:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     if: |
       (github.event.issue.body && contains(github.event.issue.body, '@claude')) ||
       (github.event.comment.body && contains(github.event.comment.body, '@claude')) ||
@@ -27,12 +27,40 @@ jobs:
       (github.event.review.body && contains(github.event.review.body, '@claude'))
     
     steps:
+      - name: Extract Claude request
+        id: extract-request
+        run: |
+          if [[ "${{ github.event_name }}" == "issues" ]]; then
+            echo "prompt=${{ github.event.issue.body }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "issue_comment" ]]; then
+            echo "prompt=${{ github.event.comment.body }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "prompt=${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "pull_request_review_comment" ]]; then
+            echo "prompt=${{ github.event.review.body }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Claude Code Review
-        uses: anthropics/claude-code-action@beta
-        timeout-minutes: 8
         with:
+          fetch-depth: 0
+
+      - name: Run Claude Code
+        uses: anthropics/claude-code-base-action@beta
+        with:
+          prompt: |
+            You are a helpful coding assistant. The user has requested: 
+            ${{ steps.extract-request.outputs.prompt }}
+            
+            Please analyze the current codebase and provide appropriate assistance.
+            Focus on:
+            - Code quality and best practices
+            - Bug fixes and improvements
+            - Adding new features if requested
+            - Writing tests if needed
+            - Documentation updates
+            
+            Respond with concrete code changes or suggestions.
+          allowed_tools: "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,TodoWrite"
           anthropic_api_key: ${{ secrets.ANTHROPIC_SECRET }}
-          timeout_minutes: 10
+          model: "claude-3-5-sonnet-20241022"
