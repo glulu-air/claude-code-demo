@@ -32,8 +32,8 @@ jobs:
         uses: anthropics/claude-code-action@beta
         timeout-minutes: 3
         with:
-          anthropic-api-key: ${{ secrets.ANTHROPIC_SECRET }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_SECRET }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Claude Code
         timeout-minutes: 5
