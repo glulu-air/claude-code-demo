@@ -513,6 +513,13 @@ class Game {
 }
 
 // ゲーム開始
-window.addEventListener('load', () => {
-    new Game();
-});
+if (typeof window !== 'undefined') {
+    window.addEventListener('load', () => {
+        new Game();
+    });
+}
+
+// Node.js環境でのエクスポート
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Game;
+}

@@ -16,6 +16,21 @@ docker-compose up -d
 # Access at http://localhost:8080
 ```
 
+### Testing
+```bash
+# Install dependencies
+npm install
+
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
 ### Alternative Docker Commands
 ```bash
 # Build and run manually
