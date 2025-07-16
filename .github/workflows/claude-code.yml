@@ -13,21 +13,29 @@ on:
 jobs:
   claude:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.body, '@claude') || contains(github.event.comment.body, '@claude') || contains(github.event.pull_request.body, '@claude') || contains(github.event.review.body, '@claude')
+    timeout-minutes: 10
+    if: |
+      (github.event.issue.body && contains(github.event.issue.body, '@claude')) ||
+      (github.event.comment.body && contains(github.event.comment.body, '@claude')) ||
+      (github.event.pull_request.body && contains(github.event.pull_request.body, '@claude')) ||
+      (github.event.review.body && contains(github.event.review.body, '@claude'))
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        timeout-minutes: 2
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Claude Code
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@beta
+        timeout-minutes: 3
         with:
           anthropic-api-key: ${{ secrets.ANTHROPIC_SECRET }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Claude Code
+        timeout-minutes: 5
         run: |
           echo "Claude Code is processing the request..."
