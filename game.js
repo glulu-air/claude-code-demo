@@ -10,7 +10,7 @@ class Game {
             y: this.canvas.height - 50,
             width: 30,
             height: 20,
-            speed: 5
+            speed: 6
         };
         
         this.bullets = [];
@@ -20,7 +20,7 @@ class Game {
         this.bossBullets = [];
         this.wave = 1;
         this.shootTimer = 0;
-        this.shootCooldown = 10; // 10フレームごとに射撃可能
+        this.shootCooldown = 8; // 8フレームごとに射撃可能
         
         this.keys = {};
         
@@ -125,7 +125,7 @@ class Game {
         this.moveInvaders();
         
         // インベーダーの射撃
-        if (Math.random() < 0.005) {
+        if (Math.random() < 0.002) {
             this.invaderShoot();
         }
         
@@ -177,7 +177,7 @@ class Game {
             y: shooter.y + shooter.height,
             width: 4,
             height: 10,
-            speed: 3
+            speed: 2
         });
     }
 
@@ -187,8 +187,8 @@ class Game {
             y: 50,
             width: 120,
             height: 80,
-            hp: 10,
-            maxHp: 10,
+            hp: 7,
+            maxHp: 7,
             speed: 2,
             direction: 1,
             shootTimer: 0,
