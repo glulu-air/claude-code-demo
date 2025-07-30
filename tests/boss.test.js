@@ -17,8 +17,8 @@ describe('Boss Tests', () => {
         game.spawnBoss();
         
         expect(game.boss).not.toBeNull();
-        expect(game.boss.hp).toBe(10);
-        expect(game.boss.maxHp).toBe(10);
+        expect(game.boss.hp).toBe(7);
+        expect(game.boss.maxHp).toBe(7);
         expect(game.boss.width).toBe(120);
         expect(game.boss.height).toBe(80);
         expect(game.boss.speed).toBe(2);
@@ -113,6 +113,8 @@ describe('Boss Tests', () => {
     });
 
     test('ボス撃破時の処理', () => {
+        // 全インベーダーを削除してボス衝突を隔離
+        game.invaders.forEach(invader => invader.alive = false);
         game.spawnBoss();
         const initialScore = game.score;
         

@@ -78,16 +78,19 @@ describe('Collision Detection Tests', () => {
     });
 
     test('プレイヤー弾丸とボスの衝突', () => {
+        // 全インベーダーを削除してボス衝突を隔離
+        game.invaders.forEach(invader => invader.alive = false);
         game.spawnBoss();
         
-        // プレイヤー弾丸を作成
-        game.bullets.push({
-            x: game.boss.x + 50,
-            y: game.boss.y + 40,
+        // プレイヤー弾丸を作成 - ボスの中心に配置
+        const bullet = {
+            x: game.boss.x + 10, // ボス内部に確実に配置
+            y: game.boss.y + 10,
             width: 4,
             height: 10,
             speed: 7
-        });
+        };
+        game.bullets.push(bullet);
         
         const initialHp = game.boss.hp;
         const initialScore = game.score;
@@ -100,12 +103,14 @@ describe('Collision Detection Tests', () => {
     });
 
     test('ボス撃破時の特別処理', () => {
+        // 全インベーダーを削除してボス衝突を隔離
+        game.invaders.forEach(invader => invader.alive = false);
         game.spawnBoss();
         game.boss.hp = 1; // 最後の1HP
         
         game.bullets.push({
-            x: game.boss.x + 50,
-            y: game.boss.y + 40,
+            x: game.boss.x + game.boss.width / 2,
+            y: game.boss.y + game.boss.height / 2,
             width: 4,
             height: 10,
             speed: 7

@@ -6,7 +6,15 @@ describe('Integration Tests', () => {
     
     beforeEach(() => {
         const mockCanvas = new HTMLCanvasElement();
-        document.getElementById = jest.fn().mockReturnValue(mockCanvas);
+        document.getElementById = jest.fn((id) => {
+            if (id === 'gameCanvas') {
+                return mockCanvas;
+            }
+            return {
+                textContent: '',
+                style: { display: 'none' }
+            };
+        });
         
         game = new Game();
         game.gameLoop = jest.fn();
@@ -62,14 +70,16 @@ describe('Integration Tests', () => {
         
         // ボス撃破
         for (let i = 0; i < 10; i++) {
-            game.bullets.push({
-                x: game.boss.x + 50,
-                y: game.boss.y + 40,
-                width: 4,
-                height: 10,
-                speed: 7
-            });
-            game.checkCollisions();
+            if (game.boss) { // ボスが存在する場合のみ弾丸追加
+                game.bullets.push({
+                    x: game.boss.x + 50,
+                    y: game.boss.y + 40,
+                    width: 4,
+                    height: 10,
+                    speed: 7
+                });
+                game.checkCollisions();
+            }
         }
         
         expect(game.boss).toBeNull();

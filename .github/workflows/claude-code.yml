@@ -63,4 +63,3 @@ jobs:
             Respond with concrete code changes or suggestions.
           allowed_tools: "Bash,Read,Write,Edit,MultiEdit,Glob,Grep,TodoWrite"
           anthropic_api_key: ${{ secrets.ANTHROPIC_SECRET }}
-          model: "claude-3-5-sonnet-20241022"

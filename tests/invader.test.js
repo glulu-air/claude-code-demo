@@ -5,7 +5,15 @@ describe('Invader Tests', () => {
     
     beforeEach(() => {
         const mockCanvas = new HTMLCanvasElement();
-        document.getElementById = jest.fn().mockReturnValue(mockCanvas);
+        document.getElementById = jest.fn((id) => {
+            if (id === 'gameCanvas') {
+                return mockCanvas;
+            }
+            return {
+                textContent: '',
+                style: { display: 'none' }
+            };
+        });
         
         game = new Game();
         game.gameLoop = jest.fn();

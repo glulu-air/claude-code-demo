@@ -1,16 +1,52 @@
 class Game {
+    // ゲーム設定定数
+    static CONFIG = {
+        PLAYER_SPEED: 6,
+        BULLET_SPEED: 7,
+        BULLET_COOLDOWN: 8,
+        INVADER_SHOOT_PROBABILITY: 0.002,
+        INVADER_BULLET_SPEED: 2,
+        INVADER_MOVE_SPEED: 1,
+        INVADER_DROP_DISTANCE: 20,
+        BOSS_HP: 7,
+        BOSS_SPEED: 2,
+        BOSS_SHOOT_INTERVAL: 60,
+        BOSS_SPECIAL_INTERVAL: 180,
+        BOSS_BULLET_SPEED: 4,
+        BOSS_SPECIAL_SPEED: 5,
+        CANVAS_WIDTH: 800,
+        CANVAS_HEIGHT: 600,
+        INVADER_ROWS: 5,
+        INVADER_COLS: 10,
+        INVADER_WIDTH: 30,
+        INVADER_HEIGHT: 20,
+        INVADER_SPACING: 40,
+        INVADER_START_X: 100,
+        INVADER_START_Y: 50,
+        PLAYER_WIDTH: 30,
+        PLAYER_HEIGHT: 20
+    };
+    
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
+        if (!this.canvas) {
+            throw new Error('Canvas element with id "gameCanvas" not found');
+        }
         this.ctx = this.canvas.getContext('2d');
+        if (!this.ctx) {
+            throw new Error('Failed to get 2D context from canvas');
+        }
+        
+        this.animationFrameId = null;
         this.score = 0;
         this.gameOver = false;
         
         this.player = {
-            x: this.canvas.width / 2 - 15,
+            x: this.canvas.width / 2 - Game.CONFIG.PLAYER_WIDTH / 2,
             y: this.canvas.height - 50,
-            width: 30,
-            height: 20,
-            speed: 5
+            width: Game.CONFIG.PLAYER_WIDTH,
+            height: Game.CONFIG.PLAYER_HEIGHT,
+            speed: Game.CONFIG.PLAYER_SPEED
         };
         
         this.bullets = [];
@@ -20,7 +56,7 @@ class Game {
         this.bossBullets = [];
         this.wave = 1;
         this.shootTimer = 0;
-        this.shootCooldown = 10; // 10フレームごとに射撃可能
+        this.shootCooldown = Game.CONFIG.BULLET_COOLDOWN;
         
         this.keys = {};
         
@@ -31,22 +67,16 @@ class Game {
     
     initInvaders() {
         this.invaders = [];
-        const rows = 5;
-        const cols = 10;
-        const invaderWidth = 30;
-        const invaderHeight = 20;
-        const spacing = 40;
-        const startX = 100;
-        const startY = 50;
         
-        for (let row = 0; row < rows; row++) {
-            for (let col = 0; col < cols; col++) {
+        for (let row = 0; row < Game.CONFIG.INVADER_ROWS; row++) {
+            for (let col = 0; col < Game.CONFIG.INVADER_COLS; col++) {
                 this.invaders.push({
-                    x: startX + col * spacing,
-                    y: startY + row * spacing,
-                    width: invaderWidth,
-                    height: invaderHeight,
-                    alive: true
+                    x: Game.CONFIG.INVADER_START_X + col * Game.CONFIG.INVADER_SPACING,
+                    y: Game.CONFIG.INVADER_START_Y + row * Game.CONFIG.INVADER_SPACING,
+                    width: Game.CONFIG.INVADER_WIDTH,
+                    height: Game.CONFIG.INVADER_HEIGHT,
+                    alive: true,
+                    direction: 1
                 });
             }
         }
@@ -78,7 +108,7 @@ class Game {
             y: this.player.y,
             width: 4,
             height: 10,
-            speed: 7
+            speed: Game.CONFIG.BULLET_SPEED
         });
     }
     
@@ -125,7 +155,7 @@ class Game {
         this.moveInvaders();
         
         // インベーダーの射撃
-        if (Math.random() < 0.005) {
+        if (Math.random() < Game.CONFIG.INVADER_SHOOT_PROBABILITY) {
             this.invaderShoot();
         }
         
@@ -143,7 +173,7 @@ class Game {
     
     moveInvaders() {
         let moveDown = false;
-        const speed = 1;
+        const speed = Game.CONFIG.INVADER_MOVE_SPEED;
         
         // 端に到達したかチェック
         for (let invader of this.invaders) {
@@ -159,10 +189,10 @@ class Game {
             if (!invader.alive) continue;
             
             if (moveDown) {
-                invader.y += 20;
+                invader.y += Game.CONFIG.INVADER_DROP_DISTANCE;
                 invader.direction = invader.direction === 1 ? -1 : 1;
             } else {
-                invader.x += speed * (invader.direction || 1);
+                invader.x += speed * invader.direction;
             }
         }
     }
@@ -177,7 +207,7 @@ class Game {
             y: shooter.y + shooter.height,
             width: 4,
             height: 10,
-            speed: 3
+            speed: Game.CONFIG.INVADER_BULLET_SPEED
         });
     }
 
@@ -187,9 +217,9 @@ class Game {
             y: 50,
             width: 120,
             height: 80,
-            hp: 10,
-            maxHp: 10,
-            speed: 2,
+            hp: Game.CONFIG.BOSS_HP,
+            maxHp: Game.CONFIG.BOSS_HP,
+            speed: Game.CONFIG.BOSS_SPEED,
             direction: 1,
             shootTimer: 0,
             specialAttackTimer: 0
@@ -207,14 +237,14 @@ class Game {
         
         // ボス射撃
         this.boss.shootTimer++;
-        if (this.boss.shootTimer > 60) {
+        if (this.boss.shootTimer > Game.CONFIG.BOSS_SHOOT_INTERVAL) {
             this.bossShoot();
             this.boss.shootTimer = 0;
         }
         
         // 特殊攻撃
         this.boss.specialAttackTimer++;
-        if (this.boss.specialAttackTimer > 180) {
+        if (this.boss.specialAttackTimer > Game.CONFIG.BOSS_SPECIAL_INTERVAL) {
             this.bossSpecialAttack();
             this.boss.specialAttackTimer = 0;
         }
@@ -230,7 +260,7 @@ class Game {
                 y: this.boss.y + this.boss.height,
                 width: 6,
                 height: 12,
-                speed: 4,
+                speed: Game.CONFIG.BOSS_BULLET_SPEED,
                 angle: i * 0.3
             });
         }
@@ -246,7 +276,7 @@ class Game {
                 y: this.boss.y + this.boss.height,
                 width: 8,
                 height: 15,
-                speed: 5,
+                speed: Game.CONFIG.BOSS_SPECIAL_SPEED,
                 angle: i * 0.5
             });
         }
@@ -264,7 +294,10 @@ class Game {
                     invader.alive = false;
                     this.bullets.splice(i, 1);
                     this.score += 10;
-                    document.getElementById('score').textContent = this.score;
+                    const scoreElement = document.getElementById('score');
+                    if (scoreElement) {
+                        scoreElement.textContent = this.score;
+                    }
                     break;
                 }
             }
@@ -279,12 +312,17 @@ class Game {
                     this.boss.hp--;
                     this.bullets.splice(i, 1);
                     this.score += 50;
-                    document.getElementById('score').textContent = this.score;
+                    const scoreElement = document.getElementById('score');
+                    if (scoreElement) {
+                        scoreElement.textContent = this.score;
+                    }
                     
                     if (this.boss.hp <= 0) {
                         this.boss = null;
                         this.score += 500;
-                        document.getElementById('score').textContent = this.score;
+                        if (scoreElement) {
+                            scoreElement.textContent = this.score;
+                        }
                     }
                     break;
                 }
@@ -447,7 +485,10 @@ class Game {
         }
         
         if (this.gameOver) {
-            document.getElementById('gameOver').style.display = 'block';
+            const gameOverElement = document.getElementById('gameOver');
+            if (gameOverElement) {
+                gameOverElement.style.display = 'block';
+            }
         }
     }
     
@@ -493,7 +534,7 @@ class Game {
     restart() {
         this.score = 0;
         this.gameOver = false;
-        this.player.x = this.canvas.width / 2 - 15;
+        this.player.x = this.canvas.width / 2 - Game.CONFIG.PLAYER_WIDTH / 2;
         this.bullets = [];
         this.invaderBullets = [];
         this.boss = null;
@@ -501,14 +542,29 @@ class Game {
         this.wave = 1;
         this.shootTimer = 0;
         this.initInvaders();
-        document.getElementById('score').textContent = this.score;
-        document.getElementById('gameOver').style.display = 'none';
+        const scoreElement = document.getElementById('score');
+        const gameOverElement = document.getElementById('gameOver');
+        if (scoreElement) {
+            scoreElement.textContent = this.score;
+        }
+        if (gameOverElement) {
+            gameOverElement.style.display = 'none';
+        }
     }
     
     gameLoop() {
+        if (this.stopped) return;
         this.update();
         this.render();
-        requestAnimationFrame(() => this.gameLoop());
+        this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
+    }
+    
+    stop() {
+        this.stopped = true;
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
     }
 }
 

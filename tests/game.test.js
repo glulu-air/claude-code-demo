@@ -28,7 +28,7 @@ describe('Game Class Basic Tests', () => {
         expect(game.player.y).toBe(game.canvas.height - 50);
         expect(game.player.width).toBe(30);
         expect(game.player.height).toBe(20);
-        expect(game.player.speed).toBe(5);
+        expect(game.player.speed).toBe(6);
     });
 
     test('インベーダー初期化', () => {
