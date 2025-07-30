@@ -22,18 +22,32 @@ global.HTMLCanvasElement = class {
     }
 };
 
-global.document = {
-    getElementById: jest.fn(() => ({
+// モック用HTMLElement
+function createMockElement() {
+    return {
         textContent: '',
-        style: { display: '' }
-    })),
+        style: {
+            display: 'none'
+        }
+    };
+}
+
+global.document = {
+    getElementById: jest.fn((id) => {
+        if (id === 'gameCanvas') {
+            return new HTMLCanvasElement();
+        }
+        return createMockElement();
+    }),
     addEventListener: jest.fn(),
     createElement: jest.fn(() => new HTMLCanvasElement())
 };
 
 global.window = {
     addEventListener: jest.fn(),
-    requestAnimationFrame: jest.fn()
+    requestAnimationFrame: jest.fn(),
+    cancelAnimationFrame: jest.fn()
 };
 
 global.requestAnimationFrame = jest.fn();
+global.cancelAnimationFrame = jest.fn();
